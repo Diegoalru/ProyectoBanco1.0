@@ -4,18 +4,13 @@
  */
 package bancoproyecto;
 
-import java.awt.Component;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
-/**
- *
- * @author DuchetCR
- */
-public class Usuario {
+class Usuario {
     private String usuario;
     private String contraseña;
 
@@ -29,11 +24,12 @@ public class Usuario {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-
+    
     public String getContraseña() {
-        return "*".repeat(this.contraseña.length());
+        
+        return this.contraseña = this.contraseña;
     }
-
+    
     public void setContraseña() {
         JPasswordField passwordField = new JPasswordField();
         passwordField.setEchoChar('*');
@@ -42,18 +38,19 @@ public class Usuario {
         panel.add(new JLabel("La contraseña debe tener al menos 8 caracteres"));
         panel.add(new JLabel("No se permiten caracteres iguales consecutivos"));
         panel.add(passwordField);
-        JOptionPane.showMessageDialog((Component)null, panel);
+        JOptionPane.showMessageDialog(null, panel);
         this.contraseña = new String(passwordField.getPassword());
         if (this.contraseña.length() < 8) {
-            JOptionPane.showMessageDialog((Component)null, "La contraseña debe tener al menos 8 caracteres");
+            JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres");
+            
         } else {
-            for(int i = 0; i < this.contraseña.length() - 1; ++i) {
+            
+            for (int i = 0; i < this.contraseña.length() - 1; ++i) {
                 if (this.contraseña.charAt(i) == this.contraseña.charAt(i + 1)) {
-                    JOptionPane.showMessageDialog((Component)null, "No se permiten caracteres iguales consecutivos");
+                    JOptionPane.showMessageDialog(null, "No se permiten caracteres iguales consecutivos");
                     return;
                 }
             }
-
             this.contraseña = this.contraseña;
         }
     }
