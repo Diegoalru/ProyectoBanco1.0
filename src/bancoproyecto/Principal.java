@@ -22,12 +22,18 @@ public class Principal {
         
         for (int i = 0; i < 3; i++) {
             String usuario = JOptionPane.showInputDialog("Usuario: ");
-            JPasswordField passwordField = new JPasswordField();
-            passwordField.setEchoChar('*');
-            int option = JOptionPane.showConfirmDialog(null, passwordField, "Password:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            if (option == JOptionPane.OK_OPTION && usuario.equals(u1.getUsuario()) && passwordField.getPassword().length > 0) {
+            JPasswordField Censura = new JPasswordField();
+            int option = JOptionPane.showConfirmDialog(null, Censura, "Password:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            
+            char[] ContaseñaChars = Censura.getPassword();
+            String Contraseña = new String(ContaseñaChars);
+
+            if (usuario.equals(u1.getUsuario()) && Contraseña.equals(u1.getContraseña())) {
                 JOptionPane.showMessageDialog(null, "Entro al sistema");
                 // Resto del código aquí
+                
+                
+                
                 
                 
                 

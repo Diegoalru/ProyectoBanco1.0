@@ -32,7 +32,6 @@ class Usuario {
     
     public void setContraseña() {
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setEchoChar('*');
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(new JLabel("Cree su Contraseña:"));
         panel.add(new JLabel("La contraseña debe tener al menos 8 caracteres"));
