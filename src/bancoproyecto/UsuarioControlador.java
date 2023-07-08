@@ -15,10 +15,10 @@ public class UsuarioControlador {
      */
     public static Usuario CreaUsuario() {
         String usuario = SolicitaUsuario(false);
-        String contraseña = SolicitaContraseña(false);
-        Usuario nuevoUsuario = new Usuario(usuario, contraseña);
+        String contrasena = SolicitaContrasena(false);
+        Usuario nuevoUsuario = new Usuario(usuario, contrasena);
 
-        // Desde el metodo toString de la clase Usuario, se pueden mostras las
+        // Desde el método toString de la clase Usuario, se pueden mostrar las
         // propiedades de la clase y personalizar el mensaje desde un solo lugar.
         System.out.println("Información de Usuario Creado: " + nuevoUsuario);
 
@@ -31,10 +31,10 @@ public class UsuarioControlador {
     public static void IniciarSesionUsuario() {
         // Solicitar usuario y contraseña
         String usuario = SolicitaUsuario(true);
-        String contraseña = SolicitaContraseña(true);
+        String contrasena = SolicitaContrasena(true);
 
         // Crear un objeto de tipo Usuario con los datos ingresados por el usuario.
-        Usuario usuarioInicioSesion = new Usuario(usuario, contraseña);
+        Usuario usuarioInicioSesion = new Usuario(usuario, contrasena);
 
         // Validar las credenciales del usuario.
         Boolean inicioSesionResultado = UsuarioData.InicioSesion(usuarioInicioSesion);
@@ -42,7 +42,7 @@ public class UsuarioControlador {
         if (inicioSesionResultado) {
             JOptionPane.showMessageDialog(null, "Inicio de sesion exitoso", "Inicio de sesion",
                     JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0); // Cierre de proyecto exitoso!
+            System.exit(0); // ¡Cierre de proyecto exitoso!
         } else {
             JOptionPane.showMessageDialog(null, "Inicio de sesion fallido", "Inicio de sesion",
                     JOptionPane.ERROR_MESSAGE);
@@ -77,7 +77,7 @@ public class UsuarioControlador {
                 int opcion = JOptionPane.showConfirmDialog(
                         null,
                         panel,
-                        (esInicioSesion ? "Inicio de sesion" : "Crear usuario"), // Titulo de la ventana
+                        (esInicioSesion ? "Inicio de sesion" : "Crear usuario"), // Título de la ventana
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
                 if (opcion == JOptionPane.OK_OPTION) {
@@ -94,20 +94,20 @@ public class UsuarioControlador {
                 }
 
                 if (usuario.isEmpty()) {
-                    throw new Exception("El usuario no puede estar vacio");
+                    throw new Exception("El usuario no puede estar vació");
                 }
 
-                Integer longitudMiminaUsuario = 3;
+                int longitudMininaUsuario = 3;
 
-                if (usuario.length() < longitudMiminaUsuario) {
-                    throw new Exception("El usuario debe tener al menos " + longitudMiminaUsuario + " caracteres");
+                if (usuario.length() < longitudMininaUsuario) {
+                    throw new Exception("El usuario debe tener al menos " + longitudMininaUsuario + " caracteres");
                 }
 
                 validInput = true;
             } catch (NullPointerException e) {
-                // En caso de que el usuario presione el boton de cancelar, cierre la ventana o
+                // En caso de que el usuario presione el botón de cancelar, cierre la ventana o
                 // presione la tecla ESC.
-                JOptionPane.showMessageDialog(null, "El usuario no puede estar vacio");
+                JOptionPane.showMessageDialog(null, "El usuario no puede estar vació");
             } catch (Exception e) {
                 // En caso de que el usuario no cumpla con las validaciones, se muestra el
                 // mensaje de error.
@@ -118,14 +118,14 @@ public class UsuarioControlador {
     }
 
     /**
-     * Solicita la contraseña al usuario.
+     * Solicita la contrasena al usuario.
      * 
-     * @param esInicioSesion Indica si la contraseña se solicita para iniciar sesion
+     * @param esInicioSesion Indica si la contraseña se solicita para iniciar sesión
      *                       o para crear un usuario.
      * @return La contraseña ingresada por el usuario.
      */
-    private static String SolicitaContraseña(Boolean esInicioSesion) {
-        String contraseña = null; // Inicializar la variable para que no marque error.
+    private static String SolicitaContrasena(Boolean esInicioSesion) {
+        String contrasena = null; // Inicializar la variable para que no marque error.
         boolean validInput = false; // Bandera para validar la entrada del usuario.
 
         while (!validInput) {
@@ -144,11 +144,11 @@ public class UsuarioControlador {
                 int opcion = JOptionPane.showConfirmDialog(
                         null,
                         panel,
-                        (esInicioSesion ? "Inicio de sesion" : "Crear contraseña"), // Titulo de la ventana
+                        (esInicioSesion ? "Inicio de sesion" : "Crear contraseña"), // Título de la ventana
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
                 if (opcion == JOptionPane.OK_OPTION) {
-                    contraseña = new String(passwordField.getPassword());
+                    contrasena = new String(passwordField.getPassword());
                 } else {
                     var salir = JOptionPane.showConfirmDialog(null, "¿Desear salir?", "Salir",
                             JOptionPane.YES_NO_OPTION);
@@ -157,31 +157,31 @@ public class UsuarioControlador {
                         System.exit(0);
                     }
 
-                    throw new Exception("Ingrese de nuevo la contraseña");
+                    throw new Exception("Ingrese de nuevo la contrasena");
                 }
 
                 // #region Validaciones de contraseña
-                if (contraseña.isEmpty()) {
-                    throw new Exception("La contraseña no puede estar vacia");
+                if (contrasena.isEmpty()) {
+                    throw new Exception("La contrasena no puede estar vaciá");
                 }
 
-                Integer longitudMinimaContraseña = 8;
+                int longitudMinimaContrasena = 8;
 
-                if (contraseña.length() < longitudMinimaContraseña) {
+                if (contrasena.length() < longitudMinimaContrasena) {
                     throw new Exception(
-                            "La contraseña debe tener al menos " + longitudMinimaContraseña + " caracteres");
+                            "La contrasena debe tener al menos " + longitudMinimaContrasena + " caracteres");
                 }
 
-                if (contraseña.matches(".*([a-zA-Z])\\1{1,}.*")) {
-                    throw new Exception("La contraseña no puede tener caracteres iguales consecutivos");
+                if (contrasena.matches(".*([a-zA-Z])\\1+.*")) {
+                    throw new Exception("La contrasena no puede tener caracteres iguales consecutivos");
                 }
                 // #endregion
 
                 validInput = true;
             } catch (NullPointerException e) {
-                // En caso de que el usuario presione el boton de cancelar, cierre la ventana o
+                // En caso de que el usuario presione el botón de cancelar, cierre la ventana o
                 // presione la tecla ESC.
-                JOptionPane.showMessageDialog(null, "La contraseña no puede estar vacia");
+                JOptionPane.showMessageDialog(null, "La contrasena no puede estar vaciá");
             } catch (Exception e) {
                 // En caso de que el usuario no cumpla con las validaciones, se muestra el
                 // mensaje de error.
@@ -189,6 +189,6 @@ public class UsuarioControlador {
             }
         }
 
-        return contraseña;
+        return contrasena;
     }
 }
