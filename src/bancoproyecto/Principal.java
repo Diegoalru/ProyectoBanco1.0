@@ -1,5 +1,6 @@
 package bancoproyecto;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -26,7 +27,7 @@ public class Principal {
         UsuarioData.NuevoUsuario(nuevoUsuario, nuevoUsuario1, nuevoUsuario2);
 
         // Verifica los usuarios registrados en UsuarioData.
-        logger.info("Usuarios registrados en el sistema: " + UsuarioData.ObtieneListaUsuarios());
+        logger.log(Level.INFO, "Usuarios registrados en el sistema: {0}", UsuarioData.ObtieneListaUsuarios());
 
         UsuarioControlador.IniciarSesionUsuario();
     }
