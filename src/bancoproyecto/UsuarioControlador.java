@@ -16,13 +16,7 @@ public class UsuarioControlador {
     public static Usuario CreaUsuario() {
         String usuario = SolicitaUsuario(false);
         String contrasena = SolicitaContrasena(false);
-        Usuario nuevoUsuario = new Usuario(usuario, contrasena);
-
-        // Desde el método toString de la clase Usuario, se pueden mostrar las
-        // propiedades de la clase y personalizar el mensaje desde un solo lugar.
-        System.out.println("Información de Usuario Creado: " + nuevoUsuario);
-
-        return nuevoUsuario;
+        return new Usuario(usuario, contrasena);
     }
 
     /**
@@ -42,7 +36,11 @@ public class UsuarioControlador {
         if (inicioSesionResultado) {
             JOptionPane.showMessageDialog(null, "Inicio de sesion exitoso", "Inicio de sesion",
                     JOptionPane.INFORMATION_MESSAGE);
+
+            // TODO: Agregar el código para mostrar el menu principal.
+
             System.exit(0); // ¡Cierre de proyecto exitoso!
+
         } else {
             JOptionPane.showMessageDialog(null, "Inicio de sesion fallido", "Inicio de sesion",
                     JOptionPane.ERROR_MESSAGE);
