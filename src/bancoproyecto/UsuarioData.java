@@ -1,6 +1,4 @@
-package bancoproyecto.data;
-
-import bancoproyecto.models.Usuario;
+package bancoproyecto;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +20,7 @@ public class UsuarioData {
     }
 
     /**
-     * Guarda uno o varios usuarios en UsuarioData.
+     * Guarda el usuario en la clase UsuarioData
      * @param nuevoUsuario Usuario que se desea guardar
      */
     public static void NuevoUsuario(Usuario ... nuevoUsuario){
