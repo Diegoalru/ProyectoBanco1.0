@@ -1,25 +1,23 @@
 package bancoproyecto.view;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import bancoproyecto.controller.MainController;
+
+import javax.swing.*;
 
 public class InicioView extends JFrame {
     private JButton Btn_CrearUsuario;
     private JButton Btn_IniciarSesion;
-    private JPanel MyPane;
+    private JPanel MainPanel;
 
     public InicioView() {
         initComponents();
 
         Btn_CrearUsuario.addActionListener(actionEvent -> {
-            CreaCuentaView creaCuentaView = new CreaCuentaView();
-            creaCuentaView.CreaUsuario();
+            MainController.OpenRegisterView();
         });
 
         Btn_IniciarSesion.addActionListener(actionEvent -> {
-            InicioSesionView inicioSesionView = new InicioSesionView();
-            inicioSesionView.IniciarSesionUsuario();
+            MainController.OpenLoginView();
         });
     }
 
@@ -28,11 +26,20 @@ public class InicioView extends JFrame {
      */
     private void initComponents() {
         setTitle("Inicio");
-        setContentPane(MyPane);
+        setContentPane(MainPanel);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(300, 150));
         setResizable(true);
         pack();
+    }
+
+    public void Start() {
+        this.setVisible(true);
+    }
+
+    public void Stop() {
+        this.setVisible(false);
+        this.dispose();
     }
 }
