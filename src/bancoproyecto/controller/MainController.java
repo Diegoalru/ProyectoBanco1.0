@@ -50,11 +50,14 @@ public class MainController {
         loginView.Start();
     }
 
-    public static void OpenMainView() {
+    public static void OpenMainView(Usuario datosUsuario) {
         try {
-            if (usuario == null) {
+            if (datosUsuario == null) {
                 throw new Exception("No se ha iniciado sesión");
             }
+
+            // Guardar los datos del usuario
+            usuario = datosUsuario;
 
             // Cerrar la ventana de inicio
             inicioView.Stop();

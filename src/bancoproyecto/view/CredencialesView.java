@@ -114,7 +114,7 @@ public class CredencialesView extends JFrame {
 
             this.dispose();
 
-            MainController.OpenMainView();
+            MainController.OpenMainView(datosUsuario);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
