@@ -16,6 +16,8 @@ public class CredencialesView extends JFrame {
     private JButton Btn_Cancelar;
     private JTextField Txt_Usuario;
     private JPasswordField Txt_Contrasena;
+    private JLabel Lbl_Titulo_Errores;
+    private JLabel Lbl_Errores;
 
     public CredencialesView(TipoCredencial tipoCredencial) {
         initComponents(tipoCredencial);

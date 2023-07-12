@@ -3,6 +3,8 @@ package bancoproyecto.controller;
 import bancoproyecto.models.Usuario;
 import bancoproyecto.view.CredencialesView;
 import bancoproyecto.view.InicioView;
+import bancoproyecto.view.LoginView;
+import bancoproyecto.view.RegisterView;
 
 import javax.swing.*;
 import java.util.logging.Level;
@@ -11,6 +13,8 @@ import java.util.logging.Logger;
 public class MainController {
     private static final Logger logger = Logger.getLogger(MainController.class.getName());
     private static final InicioView inicioView = new InicioView();
+    private static final RegisterView registerView = new RegisterView();
+    private static final LoginView loginView = new LoginView();
     private static CredencialesView credencialesView;
     private static Usuario usuario = null;
 
@@ -27,13 +31,11 @@ public class MainController {
     }
 
     public static void OpenRegisterView() {
-        credencialesView = new CredencialesView(CredencialesView.TipoCredencial.Registro);
-        credencialesView.Start();
+        registerView.Start();
     }
 
     public static void OpenLoginView() {
-        credencialesView = new CredencialesView(CredencialesView.TipoCredencial.InicioSesion);
-        credencialesView.Start();
+        loginView.Start();
     }
 
     public static void OpenMainView() {
