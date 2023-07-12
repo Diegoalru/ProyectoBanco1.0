@@ -87,7 +87,7 @@ public class UsuarioController {
         UsuarioModel resultado = UsuarioData.InicioSesion(usuarioModel);
 
         if (resultado == null) {
-            throw new Exception("El usuario no existe");
+            throw new Exception("El usuario o la contraseña son incorrectos");
         }
 
         return new Usuario(resultado.getNombre(), resultado.getUsuario(), resultado.getContrasena());
