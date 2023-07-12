@@ -4,9 +4,11 @@ import bancoproyecto.controller.UserController;
 import bancoproyecto.models.UserRegister;
 
 import javax.swing.*;
+import java.util.ResourceBundle;
 
 public class RegisterView extends JFrame {
     private final UserController userController = new UserController();
+    private final ResourceBundle bundle = ResourceBundle.getBundle("bancoproyecto.resources.Strings");
     private JPanel MainPanel;
     private JTextField Txt_Name;
     private JTextField Txt_Username;
@@ -25,9 +27,8 @@ public class RegisterView extends JFrame {
         ShowErrorMessages(null); // Ocultar los mensajes de error
     }
 
-
     private void initComponents() {
-        setTitle("Register");
+        setTitle(bundle.getString("register_title"));
         setContentPane(MainPanel);
         setResizable(true);
         setSize(400, 335);
@@ -51,7 +52,7 @@ public class RegisterView extends JFrame {
         var password = new String(Txt_Password.getPassword());
 
         if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            ShowErrorMessages("All fields are required");
+            ShowErrorMessages(bundle.getString("register_error_all_fields_required"));
             return;
         }
 
@@ -59,15 +60,15 @@ public class RegisterView extends JFrame {
             String error = null;
             UserRegister user = new UserRegister(name, username, password);
             try {
-                userController.RegistraUsuario(user);
+                userController.RegisterUser(user);
             } catch (Exception e) {
                 error = e.getMessage();
             } finally {
                 if (error == null) {
                     JOptionPane.showMessageDialog(
                             this,
-                            "User created successfully",
-                            "Register",
+                            bundle.getString("register_success_message"),
+                            bundle.getString("register_success_title"),
                             JOptionPane.INFORMATION_MESSAGE);
                     Stop();
                 } else {

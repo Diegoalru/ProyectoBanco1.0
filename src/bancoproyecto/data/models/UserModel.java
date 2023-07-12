@@ -1,81 +1,84 @@
 package bancoproyecto.data.models;
 
-import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UserModel {
-    public UID GUID;
-    private String nombre;
-    private String usuario;
-    private String contrasena;
-    private List<AccountModel> cuentas;
+    public UUID uuid;
+    private String name;
+    private String username;
+    private String password;
+    private List<AccountModel> accounts;
 
 
     /**
      * Constructor usado para iniciar sesión.
-     * @param usuario Nombre de usuario
-     * @param contrasena Contraseña del usuario
+     *
+     * @param username Nombre de usuario
+     * @param password Contraseña del usuario
      */
-    public UserModel(String usuario, String contrasena) {
-        this.usuario = usuario;
-        this.contrasena = contrasena;
+    public UserModel(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     /**
      * Constructor usado para crear un nuevo usuario.
-     * @param nombre Nombre del usuario
-     * @param usuario Nombre de usuario
-     * @param contrasena Contraseña del usuario
+     * @param name Nombre del usuario
+     * @param username Nombre de usuario
+     * @param password Contraseña del usuario
      */
-    public UserModel(String nombre, String usuario, String contrasena) {
-        this.GUID = new UID();
-        this.nombre = nombre;
-        this.usuario = usuario;
-        this.contrasena = contrasena;
-        this.cuentas = new ArrayList<>();
+    public UserModel(String name, String username, String password) {
+        this.uuid = UUID.randomUUID();
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.accounts = new ArrayList<>();
     }
 
-    public UID getGUID() {
-        return GUID;
+    public UUID getUUID() {
+        return uuid;
     }
 
-    public void setGUID(UID GUID) {
-        this.GUID = GUID;
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public String getUsuario() {
-        return usuario;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public String getUsername() {
+        return username;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public String getPassword() {
+        return password;
     }
 
-    public List<AccountModel> getCuentas() {
-        return cuentas;
+    public void setPassword(String password) {
+        this.password = password;
     }
-    
-    public void setCuentas(List<AccountModel> cuentas) {
-        this.cuentas = cuentas;
+
+    public List<AccountModel> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<AccountModel> accountsList) {
+        accounts = accountsList;
     }
 
     @Override
     public String toString() {
-        return String.format("GUID: %s, Nombre: %s, Usuario: %s, y su contraseña: %s", GUID, nombre, usuario, contrasena); // %s es para string.
+        return String.format("UUID: %s, Name: %s, and Username: %s", uuid, name, username); // %s es para string.
     }
 }

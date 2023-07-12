@@ -1,20 +1,23 @@
 package bancoproyecto.models;
 
-import java.rmi.server.UID;
+import java.util.UUID;
 
 public class Account {
-    private UID accountNumber;
+    private UUID accountNumber;
     private String name;
     private Double balance;
 
-    public Account(UID accountNumber, String name, Double balance) {
+    public Account(UUID accountNumber, String name, Double balance) {
         this.accountNumber = accountNumber;
         this.name = name;
         this.balance = balance;
     }
 
-    public UID getAccountNumber() {
+    public UUID getAccountNumber() {
         return accountNumber;
+    }
+    public void setAccountNumber(UUID accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getName() {

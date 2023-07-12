@@ -7,95 +7,106 @@ import bancoproyecto.models.User;
 import bancoproyecto.models.UserLogin;
 import bancoproyecto.models.UserRegister;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 public class UserController {
+
+    private final ResourceBundle bundle = ResourceBundle.getBundle("bancoproyecto.resources.Strings");
     private final int STR_MIN_LENGTH = 5;
+    private final int STR_MAX_LENGTH = 32;
 
     /**
-     * Registra un usuario en el sistema.
+     * Registra un user en el sistema.
      *
-     * @param usuario Usuario que se desea registrar
-     * @throws Exception Si el usuario no cumple con las validaciones
+     * @param user {@link UserRegister Usuario} que se desea registrar.
+     * @throws Exception Si el {@link UserRegister user} no cumple con las validaciones.
      */
-    public void RegistraUsuario(UserRegister usuario) throws Exception {
+    public void RegisterUser(UserRegister user) throws Exception {
         //#region Validaciones
-        validar(usuario.username(), "El usuario debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH),
-                s -> s.length() >= STR_MIN_LENGTH);
-        validar(usuario.username(), "El usuario no puede contener caracteres especiales",
-                s -> s.matches("[a-zA-Z0-9]+"));
-        validar(usuario.password(), "La contraseña debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH),
-                s -> s.length() >= STR_MIN_LENGTH);
-        validar(usuario.password(), "La contraseña no puede ser igual al usuario",
-                s -> !s.equals(usuario.username()));
-        validar(usuario.password(), "La contrasena no puede tener caracteres iguales consecutivos",
-                s -> !s.matches(".*([a-zA-Z])\\1+.*"));
-        validar(usuario.password(), "La contraseña solo puede tener los siguientes caracteres especiales: $, #, %, &, *",
-                s -> s.matches("^[a-zA-Z0-9$#%&*]+$"));
+        validate(user.name(), MessageFormat.format(bundle.getString("name_min_length"), 3), s -> s.length() >= 3);
+        validate(user.name(), MessageFormat.format(bundle.getString("name_max_length"), STR_MAX_LENGTH), s -> s.length() >= STR_MAX_LENGTH);
+        validate(user.name(), bundle.getString("name_invalid_characters"), s -> s.matches("[a-zA-Z]+"));
+        validate(user.username(), MessageFormat.format(bundle.getString("username_min_length"), STR_MIN_LENGTH), s -> s.length() >= STR_MIN_LENGTH);
+        validate(user.username(), MessageFormat.format(bundle.getString("username_max_length"), STR_MAX_LENGTH), s -> s.length() >= STR_MAX_LENGTH);
+        validate(user.username(), bundle.getString("username_invalid_characters"), s -> s.matches("[a-zA-Z0-9]+"));
+        validate(user.password(), MessageFormat.format(bundle.getString("password_min_length"), STR_MIN_LENGTH), s -> s.length() >= STR_MIN_LENGTH);
+        validate(user.password(), MessageFormat.format(bundle.getString("password_max_length"), STR_MAX_LENGTH), s -> s.length() >= STR_MAX_LENGTH);
+        validate(user.password(), bundle.getString("password_cannot_be_equal_to_username"), s -> !s.equals(user.username()));
+        validate(user.password(), bundle.getString("password_cannot_have_consecutive_equal_characters"), s -> !s.matches(".*([a-zA-Z])\\1+.*"));
+        validate(user.password(), bundle.getString("password_invalid_characters"), s -> s.matches("^[a-zA-Z0-9$#%&*_]+$"));
         //#endregion
 
-        UserModel usuarioModel = new UserModel(usuario.name(), usuario.username(), usuario.password());
+        UserModel usuarioModel = new UserModel(user.name(), user.username(), user.password());
 
         if (UserRepository.UserExists(usuarioModel)) {
-            throw new Exception("El usuario ya existe");
+            throw new Exception(bundle.getString("register_username_taken"));
         }
 
         UserRepository.NewUser(usuarioModel);
     }
 
     /**
-     * Inicia sesion con el usuario que se encuentra en UsuarioData
+     * Inicia sesion con el usuario proporcionado.
      *
-     * @param usuario Usuario que se desea iniciar sesion
-     * @throws Exception Si el usuario no cumple con las validaciones
+     * @param user {@link UserLogin Usuario} que se desea iniciar sesion
+     * @throws Exception Si el {@link UserLogin usuario} no cumple con las validaciones
      */
-    public void InicioSesion(UserLogin usuario) throws Exception {
+    public void LoginUser(UserLogin user) throws Exception {
         //#region Validaciones
-        validar(usuario.username(), "El usuario debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH),
-                s -> s.length() >= STR_MIN_LENGTH);
-        validar(usuario.username(), "El usuario no puede contener caracteres especiales",
-                s -> s.matches("[a-zA-Z0-9]+"));
-        validar(usuario.password(), "La contraseña debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH),
-                s -> s.length() >= STR_MIN_LENGTH);
-        validar(usuario.password(), "La contraseña no puede ser igual al usuario",
-                s -> !s.equals(usuario.username()));
-        validar(usuario.password(), "La contrasena no puede tener caracteres iguales consecutivos",
-                s -> !s.matches(".*([a-zA-Z])\\1+.*"));
-        validar(usuario.password(), "La contraseña solo puede tener los siguientes caracteres especiales: $, #, %, &, *",
-                s -> s.matches("^[a-zA-Z0-9$#%&*]+$"));
+        validate(user.username(), MessageFormat.format(bundle.getString("username_min_length"), STR_MIN_LENGTH), s -> s.length() >= STR_MIN_LENGTH);
+        validate(user.username(), MessageFormat.format(bundle.getString("username_max_length"), STR_MAX_LENGTH), s -> s.length() >= STR_MAX_LENGTH);
+        validate(user.username(), bundle.getString("username_invalid_characters"), s -> s.matches("[a-zA-Z0-9]+"));
+        validate(user.password(), MessageFormat.format(bundle.getString("password_min_length"), STR_MIN_LENGTH), s -> s.length() >= STR_MIN_LENGTH);
+        validate(user.password(), bundle.getString("password_cannot_have_consecutive_equal_characters"), s -> !s.matches(".*([a-zA-Z])\\1+.*"));
+        validate(user.password(), bundle.getString("password_invalid_characters"), s -> s.matches("^[a-zA-Z0-9$#%&*]+$"));
         //#endregion
 
-        UserModel usuarioModel = new UserModel(usuario.username(), usuario.password());
-        UserModel resultLogin = UserRepository.Login(usuarioModel);
+        UserModel userModel = new UserModel(user.username(), user.password());
+        UserModel resultLogin = UserRepository.Login(userModel);
 
         if (resultLogin == null) {
-            throw new Exception("Username or password incorrect!");
+            throw new Exception(bundle.getString("login_invalid_credentials"));
         }
 
         List<Account> accounts = new ArrayList<>();
-        for (var item : resultLogin.getCuentas()) {
-            accounts.add(new Account(item.getGUID(), item.getName(), item.getBalance()));
+        for (var item : resultLogin.getAccounts()) {
+            accounts.add(new Account(item.getUUID(), item.getName(), item.getBalance()));
         }
 
-        User user = new User(resultLogin.getUsuario(), accounts);
-        MainController.setUsuario(user);
+        User userdata = new User(resultLogin.getUsername(), accounts);
+        MainController.setUsuario(userdata);
     }
 
     /**
-     * Lista de usuarios en UsuarioData
+     * Lista de usuarios en el sistema.
      *
-     * @return Usuario que se encuentra en UsuarioData
-     * @deprecated Solo para pruebas
+     * @return Lista de {@link User usuarios} en el sistema.
      */
-    public String ObtieneListaUsuarios() {
-        var users = UserRepository.GetUsers().toString();
-        System.out.println(users);
+    public List<User> GetUserList() {
+        var usersRepository = UserRepository.GetUsers();
+
+        List<User> users = new ArrayList<>();
+        for (var item : usersRepository) {
+            List<Account> accounts = new ArrayList<>();
+            users.add(new User(item.getUsername()));
+        }
+
         return users;
     }
 
-    private void validar(String value, String errorMessage, Predicate<String> condition) throws Exception {
+    /**
+     * Válida una condición y lanza una excepción si no se cumple.
+     *
+     * @param value        Valor a validar.
+     * @param errorMessage Mensaje de error a mostrar.
+     * @param condition    Condición a validar.
+     * @throws Exception   Si la condición no se cumple.
+     */
+    private void validate(String value, String errorMessage, Predicate<String> condition) throws Exception {
         if (!condition.test(value)) {
             throw new Exception(errorMessage);
         }

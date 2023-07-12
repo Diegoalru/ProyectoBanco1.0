@@ -1,30 +1,30 @@
 package bancoproyecto.data.models;
 
-import java.rmi.server.UID;
+import java.util.UUID;
 
 public class AccountModel {
-    private UID GUID;
+    private UUID uuid;
     private String name;
     private Double balance;
 
     public AccountModel(String name, Double balance) {
-        this.GUID = new UID();
+        this.uuid = UUID.randomUUID();
         this.name = name;
         this.balance = balance;
     }
 
-    public AccountModel(UID GUID, String name, Double balance) {
-        this.GUID = GUID;
+    public AccountModel(UUID uuid, String name, Double balance) {
+        this.uuid = uuid;
         this.name = name;
         this.balance = balance;
     }
 
-    public UID getGUID() {
-        return GUID;
+    public UUID getUUID() {
+        return uuid;
     }
 
-    public void setGUID(UID GUID) {
-        this.GUID = GUID;
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -45,6 +45,6 @@ public class AccountModel {
 
     @Override
     public String toString() {
-        return String.format("UID: %s, Name: %s, Balance: %s", this.GUID, this.name, this.balance);
+        return String.format("UUID: %s, Name: %s, Balance: %s", uuid, name, balance);
     }
 }

@@ -6,6 +6,10 @@ public class User {
     private String user;
     private List<Account> accounts;
 
+    public User(String user) {
+        this.user = user;
+    }
+
     public User(String user, List<Account> accounts) {
         this.user = user;
         this.accounts = accounts;

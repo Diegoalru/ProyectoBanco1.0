@@ -5,9 +5,11 @@ import bancoproyecto.controller.UserController;
 import bancoproyecto.models.UserLogin;
 
 import javax.swing.*;
+import java.util.ResourceBundle;
 
 public class LoginView extends JFrame {
     private final UserController userController = new UserController();
+    private final ResourceBundle bundle = ResourceBundle.getBundle("bancoproyecto.resources.Strings");
     private JPanel MainPanel;
     private JPanel Pnl_Error;
     private JTextField Txt_Username;
@@ -26,7 +28,7 @@ public class LoginView extends JFrame {
     }
 
     private void initComponents() {
-        setTitle("Login");
+        setTitle(bundle.getString("login_title"));
         setContentPane(MainPanel);
         setResizable(true);
         setSize(400, 335);
@@ -49,7 +51,7 @@ public class LoginView extends JFrame {
         var password = new String(Txt_Password.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
-            ShowErrorMessages("All fields are required");
+            ShowErrorMessages(bundle.getString("login_empty_fields"));
             return;
         }
 
@@ -58,7 +60,7 @@ public class LoginView extends JFrame {
             UserLogin userlogin = new UserLogin(username, password);
 
             try {
-                userController.InicioSesion(userlogin);
+                userController.LoginUser(userlogin);
             } catch (Exception e) {
                 error = e.getMessage();
             } finally {

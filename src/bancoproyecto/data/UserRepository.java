@@ -3,48 +3,42 @@ package bancoproyecto.data;
 import bancoproyecto.data.models.UserModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class UserRepository {
 
     /**
-     * Objeto de tipo Usuario que se verificará en el inicio de sesion.
+     * Lista de {@link UserModel usuarios} en el sistema.
      */
     private static final List<UserModel> Users = new ArrayList<>();
 
     /**
-     * Obtiene el usuario que se encuentra en UsuarioData
-     * @return Usuario que se encuentra en UsuarioData
+     * Obtiene la lista de usuarios que se encuentran en {@code Users}
+     * @return Lista de {@link UserModel usuarios}
      */
     public static List<UserModel> GetUsers(){
         return Users;
     }
 
     /**
-     * Guarda uno o varios usuarios en UsuarioData.
+     * Guarda uno o varios {@link UserModel usuarios}.
      *
-     * @param user Usuario que se desea guardar
+     * @param user {@link UserModel Usuario} que se desea guardar.
      */
-    public static void NewUser(UserModel... user){
-        try{
-            Collections.addAll(Users, user);
-        } catch(NullPointerException e){
-            System.err.println("Error no se pudo guardar el usuario");
-        } catch(Exception e){
-            System.err.println("Error: " + e.getMessage());
-        }
+    public static void NewUser(UserModel user){
+        Users.add(user);
     }
 
     /**
-     * Inicia sesion con el usuario que se encuentra en UsuarioData
-     * @param user Usuario que se desea iniciar sesion
-     * @return True si el usuario coincide con el usuario en UsuarioData
+     * Inicia sesión con credenciales proporcionadas por el usuario.
+     *
+     * @param user {@link UserModel Usuario} que se desea iniciar sesión
+     * @return {@link UserModel Usuario} que inició sesión.
      */
     public static UserModel Login(UserModel user){
         for (var item : Users) {
-            if (item.getUsuario().equals(user.getUsuario()) &&
-                    item.getContrasena().equals(user.getContrasena())) {
+            if (item.getUsername().equals(user.getUsername()) &&
+                    item.getPassword().equals(user.getPassword())) {
                 return item;
             }
         }
@@ -52,13 +46,14 @@ public class UserRepository {
     }
 
     /**
-     * Verifica si el usuario que se desea registrar ya existe en UsuarioData
-     * @param user Usuario que se desea verificar
-     * @return True si el usuario ya existe en UsuarioData
+     * Verifica si el usuario que se desea registrar ya existe en el sistema.
+     *
+     * @param user {@link UserModel Usuario} que se desea verificar.
+     * @return {@link Boolean} que indica si el usuario existe o no.
      */
     public static Boolean UserExists(UserModel user) {
         for (var item : Users) {
-            if (item.getUsuario().equals(user.getUsuario())) {
+            if (item.getUsername().equals(user.getUsername())) {
                 return true;
             }
         }

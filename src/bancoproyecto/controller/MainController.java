@@ -1,17 +1,20 @@
 package bancoproyecto.controller;
 
 import bancoproyecto.models.User;
-import bancoproyecto.view.StartView;
 import bancoproyecto.view.LoginView;
 import bancoproyecto.view.RegisterView;
+import bancoproyecto.view.StartView;
 
 import javax.swing.*;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MainController {
     private static final Logger logger = Logger.getLogger(MainController.class.getName());
-    private static final StartView START_VIEW = new StartView();
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("bancoproyecto.resources.Strings");
+    private static final StartView startView = new StartView();
     private static RegisterView registerView;
     private static LoginView loginView;
     private static User user = null;
@@ -25,7 +28,7 @@ public class MainController {
     }
 
     public static void OpenGUI() {
-        START_VIEW.Start();
+        startView.Start();
     }
 
     public static void OpenRegisterView() {
@@ -51,18 +54,25 @@ public class MainController {
     public static void OpenMainView() {
         try {
             if (user == null) {
-                throw new Exception("No se ha iniciado sesión");
+                throw new Exception(bundle.getString("login_failed"));
             }
 
             // Cerrar la ventana de inicio
-            START_VIEW.Stop();
+            startView.Stop();
 
             // Abrir la ventana principal
-            JOptionPane.showMessageDialog(null, "¡Bienvenido %s!".formatted(user.getUser()));
-            logger.log(Level.INFO, "User %s logged in".formatted(user.getUser()));
+            JOptionPane.showMessageDialog(null,
+                    MessageFormat.format(bundle.getString("welcome_user"), user.getUser()),
+                    bundle.getString("welcome_title"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            logger.log(Level.INFO, "User has logged in");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al iniciar sesion");
-            logger.log(Level.SEVERE, "Error al iniciar sesion " + e.getMessage());
+            JOptionPane.showMessageDialog(null,
+                    bundle.getString("login_failed"),
+                    bundle.getString("login_failed"),
+                    JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, bundle.getString("login_failed"), e);
         }
     }
 }
