@@ -1,7 +1,7 @@
 package bancoproyecto.controller;
 
 import bancoproyecto.models.User;
-import bancoproyecto.view.InicioView;
+import bancoproyecto.view.StartView;
 import bancoproyecto.view.LoginView;
 import bancoproyecto.view.RegisterView;
 
@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class MainController {
     private static final Logger logger = Logger.getLogger(MainController.class.getName());
-    private static final InicioView inicioView = new InicioView();
+    private static final StartView START_VIEW = new StartView();
     private static RegisterView registerView;
     private static LoginView loginView;
     private static User user = null;
@@ -25,7 +25,7 @@ public class MainController {
     }
 
     public static void OpenGUI() {
-        inicioView.Start();
+        START_VIEW.Start();
     }
 
     public static void OpenRegisterView() {
@@ -55,7 +55,7 @@ public class MainController {
             }
 
             // Cerrar la ventana de inicio
-            inicioView.Stop();
+            START_VIEW.Stop();
 
             // Abrir la ventana principal
             JOptionPane.showMessageDialog(null, "¡Bienvenido %s!".formatted(user.getUser()));

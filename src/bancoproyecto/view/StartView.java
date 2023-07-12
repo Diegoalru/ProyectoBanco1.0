@@ -4,12 +4,12 @@ import bancoproyecto.controller.MainController;
 
 import javax.swing.*;
 
-public class InicioView extends JFrame {
+public class StartView extends JFrame {
     private JButton Btn_CrearUsuario;
     private JButton Btn_IniciarSesion;
     private JPanel MainPanel;
 
-    public InicioView() {
+    public StartView() {
         initComponents();
 
         Btn_CrearUsuario.addActionListener(actionEvent -> {
