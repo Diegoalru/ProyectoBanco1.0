@@ -1,12 +1,12 @@
 package bancoproyecto.view;
 
-import bancoproyecto.controller.UsuarioController;
-import bancoproyecto.models.Usuario;
+import bancoproyecto.controller.UserController;
+import bancoproyecto.models.UserRegister;
 
 import javax.swing.*;
 
 public class RegisterView extends JFrame {
-    private final UsuarioController usuarioController = new UsuarioController();
+    private final UserController userController = new UserController();
     private JPanel MainPanel;
     private JTextField Txt_Name;
     private JTextField Txt_Username;
@@ -57,9 +57,9 @@ public class RegisterView extends JFrame {
 
         new Thread(() -> {
             String error = null;
-            Usuario usuario = new Usuario(name, username, password);
+            UserRegister user = new UserRegister(name, username, password);
             try {
-                usuarioController.RegistraUsuario(usuario);
+                userController.RegistraUsuario(user);
             } catch (Exception e) {
                 error = e.getMessage();
             } finally {

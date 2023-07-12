@@ -1,7 +1,6 @@
 package bancoproyecto.controller;
 
-import bancoproyecto.models.Usuario;
-import bancoproyecto.view.CredencialesView;
+import bancoproyecto.models.User;
 import bancoproyecto.view.InicioView;
 import bancoproyecto.view.LoginView;
 import bancoproyecto.view.RegisterView;
@@ -15,15 +14,14 @@ public class MainController {
     private static final InicioView inicioView = new InicioView();
     private static RegisterView registerView;
     private static LoginView loginView;
-    private static CredencialesView credencialesView;
-    private static Usuario usuario = null;
+    private static User user = null;
 
-    public static Usuario getUsuario() {
-        return usuario;
+    public static User getUsuario() {
+        return user;
     }
 
-    public static void setUsuario(Usuario usuario) {
-        MainController.usuario = usuario;
+    public static void setUsuario(User user) {
+        MainController.user = user;
     }
 
     public static void OpenGUI() {
@@ -50,21 +48,18 @@ public class MainController {
         loginView.Start();
     }
 
-    public static void OpenMainView(Usuario datosUsuario) {
+    public static void OpenMainView() {
         try {
-            if (datosUsuario == null) {
+            if (user == null) {
                 throw new Exception("No se ha iniciado sesión");
             }
-
-            // Guardar los datos del usuario
-            usuario = datosUsuario;
 
             // Cerrar la ventana de inicio
             inicioView.Stop();
 
             // Abrir la ventana principal
-            JOptionPane.showMessageDialog(null, "Bienvenido " + usuario.name());
-            logger.log(Level.INFO, "Bienvenido " + usuario.name());
+            JOptionPane.showMessageDialog(null, "¡Bienvenido %s!".formatted(user.getUser()));
+            logger.log(Level.INFO, "User %s logged in".formatted(user.getUser()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al iniciar sesion");
             logger.log(Level.SEVERE, "Error al iniciar sesion " + e.getMessage());

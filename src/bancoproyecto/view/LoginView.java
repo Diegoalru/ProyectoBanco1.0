@@ -1,13 +1,13 @@
 package bancoproyecto.view;
 
 import bancoproyecto.controller.MainController;
-import bancoproyecto.controller.UsuarioController;
-import bancoproyecto.models.Usuario;
+import bancoproyecto.controller.UserController;
+import bancoproyecto.models.UserLogin;
 
 import javax.swing.*;
 
 public class LoginView extends JFrame {
-    private final UsuarioController usuarioController = new UsuarioController();
+    private final UserController userController = new UserController();
     private JPanel MainPanel;
     private JPanel Pnl_Error;
     private JTextField Txt_Username;
@@ -55,16 +55,15 @@ public class LoginView extends JFrame {
 
         new Thread(() -> {
             String error = null;
-            Usuario usuario = new Usuario(null, username, password);
-            Usuario datosUsuario = null;
+            UserLogin userlogin = new UserLogin(username, password);
 
             try {
-                datosUsuario = usuarioController.InicioSesion(usuario);
+                userController.InicioSesion(userlogin);
             } catch (Exception e) {
                 error = e.getMessage();
             } finally {
                 if (error == null || error.isEmpty()) {
-                    MainController.OpenMainView(datosUsuario);
+                    MainController.OpenMainView();
                     Stop();
                 } else {
                     ShowErrorMessages(error);

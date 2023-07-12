@@ -1,18 +1,25 @@
 package bancoproyecto.controller;
 
-import bancoproyecto.data.UsuarioData;
-import bancoproyecto.data.models.UsuarioModel;
-import bancoproyecto.models.Usuario;
+import bancoproyecto.data.UserRepository;
+import bancoproyecto.data.models.UserModel;
+import bancoproyecto.models.Account;
+import bancoproyecto.models.User;
+import bancoproyecto.models.UserLogin;
+import bancoproyecto.models.UserRegister;
 
-public class UsuarioController {
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserController {
     private final int STR_MIN_LENGTH = 5;
 
     /**
      * Registra un usuario en el sistema.
+     *
      * @param usuario Usuario que se desea registrar
      * @throws Exception Si el usuario no cumple con las validaciones
      */
-    public void RegistraUsuario(Usuario usuario) throws Exception{
+    public void RegistraUsuario(UserRegister usuario) throws Exception {
         //#region Validaciones
         if (usuario.username().length() < STR_MIN_LENGTH) {
             throw new Exception("El usuario debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
@@ -40,22 +47,22 @@ public class UsuarioController {
         }
         //#endregion
 
-        UsuarioModel usuarioModel = new UsuarioModel(usuario.name(), usuario.username(), usuario.password());
+        UserModel usuarioModel = new UserModel(usuario.name(), usuario.username(), usuario.password());
 
-        if (UsuarioData.UsuarioExiste(usuarioModel)) {
+        if (UserRepository.UserExists(usuarioModel)) {
             throw new Exception("El usuario ya existe");
         }
 
-        UsuarioData.NuevoUsuario(usuarioModel);
+        UserRepository.NewUser(usuarioModel);
     }
 
     /**
      * Inicia sesion con el usuario que se encuentra en UsuarioData
+     *
      * @param usuario Usuario que se desea iniciar sesion
-     * @return True si el usuario coincide con el usuario en UsuarioData
      * @throws Exception Si el usuario no cumple con las validaciones
      */
-    public Usuario InicioSesion(Usuario usuario) throws Exception {
+    public void InicioSesion(UserLogin usuario) throws Exception {
         //#region Validaciones
         if (usuario.username().length() < STR_MIN_LENGTH) {
             throw new Exception("El usuario debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
@@ -64,7 +71,7 @@ public class UsuarioController {
         if (!usuario.username().matches("[a-zA-Z0-9]+")) {
             throw new Exception("El usuario no puede contener caracteres especiales");
         }
-        
+
         if (usuario.password().length() < STR_MIN_LENGTH) {
             throw new Exception("La contraseña debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
         }
@@ -83,14 +90,20 @@ public class UsuarioController {
         }
         //#endregion
 
-        UsuarioModel usuarioModel = new UsuarioModel(usuario.name(), usuario.username(), usuario.password());
-        UsuarioModel resultado = UsuarioData.InicioSesion(usuarioModel);
+        UserModel usuarioModel = new UserModel(usuario.username(), usuario.password());
+        UserModel resultLogin = UserRepository.Login(usuarioModel);
 
-        if (resultado == null) {
+        if (resultLogin == null) {
             throw new Exception("El usuario o la contraseña son incorrectos");
         }
 
-        return new Usuario(resultado.getNombre(), resultado.getUsuario(), resultado.getContrasena());
+        List<Account> accounts = new ArrayList<>();
+        for (var item : resultLogin.getCuentas()) {
+            accounts.add(new Account(item.getGUID(), item.getName(), item.getBalance()));
+        }
+
+        User user = new User(resultLogin.getUsuario(), accounts);
+        MainController.setUsuario(user);
     }
 
     /**
@@ -98,9 +111,8 @@ public class UsuarioController {
      * @return Usuario que se encuentra en UsuarioData
      * @deprecated Solo para pruebas
      */
-    @Deprecated
     public String ObtieneListaUsuarios() {
-        var users = UsuarioData.ObtieneListaUsuarios().toString();
+        var users = UserRepository.GetUsers().toString();
         System.out.println(users);
         return users;
     }
