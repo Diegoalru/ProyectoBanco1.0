@@ -4,9 +4,6 @@ import bancoproyecto.data.UsuarioData;
 import bancoproyecto.data.models.UsuarioModel;
 import bancoproyecto.models.Usuario;
 
-import java.util.logging.Logger;
-
-
 public class UsuarioController {
     private final int STR_MIN_LENGTH = 5;
 
@@ -17,28 +14,33 @@ public class UsuarioController {
      */
     public void RegistraUsuario(Usuario usuario) throws Exception{
         //#region Validaciones
-        if (usuario.getUsuario().length() < STR_MIN_LENGTH) {
+        if (usuario.username().length() < STR_MIN_LENGTH) {
             throw new Exception("El usuario debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
         }
 
-        if (usuario.getContrasena().length() < STR_MIN_LENGTH) {
-            throw new Exception("La contraseña debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
-        }
-
-        if (!usuario.getUsuario().matches("[a-zA-Z0-9]+")) {
+        if (!usuario.username().matches("[a-zA-Z0-9]+")) {
             throw new Exception("El usuario no puede contener caracteres especiales");
         }
 
-        if (usuario.getContrasena().equals(usuario.getUsuario())) {
+        if (usuario.password().length() < STR_MIN_LENGTH) {
+            throw new Exception("La contraseña debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
+        }
+
+        if (usuario.password().equals(usuario.username())) {
             throw new Exception("La contraseña no puede ser igual al usuario");
         }
 
-        if (usuario.getContrasena().matches(".*([a-zA-Z])\\1+.*")) {
+        if (usuario.password().matches(".*([a-zA-Z])\\1+.*")) {
             throw new Exception("La contrasena no puede tener caracteres iguales consecutivos");
+        }
+
+        // La contraseña puede tener caracteres especiales pero no espacios y solo $, #, %, &, *.
+        if (!usuario.password().matches("^[a-zA-Z0-9$#%&*]+$")) {
+            throw new Exception("La contraseña solo puede tener los siguientes caracteres especiales: $, #, %, &, *");
         }
         //#endregion
 
-        UsuarioModel usuarioModel = new UsuarioModel(usuario.getUsuario(), usuario.getContrasena());
+        UsuarioModel usuarioModel = new UsuarioModel(usuario.name(), usuario.username(), usuario.password());
 
         if (UsuarioData.UsuarioExiste(usuarioModel)) {
             throw new Exception("El usuario ya existe");
@@ -55,35 +57,40 @@ public class UsuarioController {
      */
     public Usuario InicioSesion(Usuario usuario) throws Exception {
         //#region Validaciones
-        if (usuario.getUsuario().length() < STR_MIN_LENGTH) {
+        if (usuario.username().length() < STR_MIN_LENGTH) {
             throw new Exception("El usuario debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
         }
 
-        if (usuario.getContrasena().length() < STR_MIN_LENGTH) {
+        if (!usuario.username().matches("[a-zA-Z0-9]+")) {
+            throw new Exception("El usuario no puede contener caracteres especiales");
+        }
+        
+        if (usuario.password().length() < STR_MIN_LENGTH) {
             throw new Exception("La contraseña debe tener al menos %d caracteres".formatted(STR_MIN_LENGTH));
         }
 
-        if (!usuario.getUsuario().matches("[a-zA-Z0-9]+")) {
-            throw new Exception("El usuario no puede contener caracteres especiales");
-        }
-
-        if (usuario.getContrasena().equals(usuario.getUsuario())) {
+        if (usuario.password().equals(usuario.username())) {
             throw new Exception("La contraseña no puede ser igual al usuario");
         }
 
-        if (usuario.getContrasena().matches(".*([a-zA-Z])\\1+.*")) {
+        if (usuario.password().matches(".*([a-zA-Z])\\1+.*")) {
             throw new Exception("La contrasena no puede tener caracteres iguales consecutivos");
+        }
+
+        // La contraseña puede tener caracteres especiales pero no espacios y solo $, #, %, &, *.
+        if (!usuario.password().matches("^[a-zA-Z0-9$#%&*]+$")) {
+            throw new Exception("La contraseña solo puede tener los siguientes caracteres especiales: $, #, %, &, *");
         }
         //#endregion
 
-        UsuarioModel usuarioModel = new UsuarioModel(usuario.getUsuario(), usuario.getContrasena());
+        UsuarioModel usuarioModel = new UsuarioModel(usuario.name(), usuario.username(), usuario.password());
         UsuarioModel resultado = UsuarioData.InicioSesion(usuarioModel);
 
         if (resultado == null) {
             throw new Exception("El usuario no existe");
         }
 
-        return new Usuario(resultado.getUsuario(), resultado.getContrasena());
+        return new Usuario(resultado.getNombre(), resultado.getUsuario(), resultado.getContrasena());
     }
 
     /**
@@ -91,7 +98,7 @@ public class UsuarioController {
      * @return Usuario que se encuentra en UsuarioData
      * @deprecated Solo para pruebas
      */
-    @Deprecated(forRemoval = false)
+    @Deprecated
     public String ObtieneListaUsuarios() {
         var users = UsuarioData.ObtieneListaUsuarios().toString();
         System.out.println(users);
