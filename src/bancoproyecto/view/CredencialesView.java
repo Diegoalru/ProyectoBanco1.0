@@ -75,7 +75,7 @@ public class CredencialesView extends JFrame {
         }
 
         try {
-            usuarioController.RegistraUsuario(new Usuario(Txt_Usuario.getText(), new String(Txt_Contrasena.getPassword())));
+            //usuarioController.RegistraUsuario(new Usuario(Txt_Usuario.getText(), new String(Txt_Contrasena.getPassword())));
             JOptionPane.showMessageDialog(
                     this,
                     "Usuario registrado con éxito",
@@ -99,7 +99,7 @@ public class CredencialesView extends JFrame {
         }
 
         try {
-            Usuario datosUsuario = usuarioController.InicioSesion(new Usuario(Txt_Usuario.getText(), new String(Txt_Contrasena.getPassword())));
+            Usuario datosUsuario = usuarioController.InicioSesion(new Usuario(null, Txt_Usuario.getText(), new String(Txt_Contrasena.getPassword())));
 
             if (datosUsuario == null) {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Inicio de sesión", JOptionPane.ERROR_MESSAGE);
