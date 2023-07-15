@@ -8,7 +8,6 @@ import bancoproyecto.view.StartView;
 import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MainController {
@@ -62,17 +61,17 @@ public class MainController {
 
             // Abrir la ventana principal
             JOptionPane.showMessageDialog(null,
-                    MessageFormat.format(bundle.getString("welcome_user"), user.getUser()),
+                    MessageFormat.format(bundle.getString("welcome_user"), user.user()),
                     bundle.getString("welcome_title"),
                     JOptionPane.INFORMATION_MESSAGE
             );
-            logger.log(Level.INFO, "User has logged in");
+            logger.info("User %s has logged in.".formatted(user.user()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                     bundle.getString("login_failed"),
                     bundle.getString("login_failed"),
                     JOptionPane.ERROR_MESSAGE);
-            logger.log(Level.SEVERE, bundle.getString("login_failed"), e);
+            logger.severe(bundle.getString("login_failed") + e.getMessage());
         }
     }
 }

@@ -3,7 +3,6 @@ package bancoproyecto;
 import bancoproyecto.controller.MainController;
 
 import javax.swing.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Principal {
@@ -19,10 +18,10 @@ public class Principal {
                 // Establece el look and feel de la aplicación.
                 UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
             } catch (Exception e) {
-                logger.severe("No se pudo establecer el look and feel");
+                logger.warning("No se pudo establecer el look and feel");
             }
 
-            logger.log(Level.INFO, "Iniciando programa...");
+            logger.info("Iniciando programa...");
             MainController.OpenGUI();
         });
     }
