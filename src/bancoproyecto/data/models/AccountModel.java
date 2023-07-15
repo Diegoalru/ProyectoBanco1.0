@@ -4,18 +4,18 @@ import java.util.UUID;
 
 public class AccountModel {
     private UUID uuid;
-    private String name;
+    private String description;
     private Double balance;
 
-    public AccountModel(String name, Double balance) {
+    public AccountModel(String description, Double balance) {
         this.uuid = UUID.randomUUID();
-        this.name = name;
+        this.description = description;
         this.balance = balance;
     }
 
-    public AccountModel(UUID uuid, String name, Double balance) {
-        this.uuid = uuid;
-        this.name = name;
+    public AccountModel(String uuid, String description, Double balance) {
+        this.uuid = UUID.fromString(uuid);
+        this.description = description;
         this.balance = balance;
     }
 
@@ -27,12 +27,12 @@ public class AccountModel {
         this.uuid = uuid;
     }
 
-    public String getName() {
-        return this.name;
+    public String getDescription() {
+        return this.description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Double getBalance() {
@@ -45,6 +45,6 @@ public class AccountModel {
 
     @Override
     public String toString() {
-        return String.format("UUID: %s, Name: %s, Balance: %s", uuid, name, balance);
+        return String.format("UUID: %s, Name: %s, Balance: %s", uuid, description, balance);
     }
 }

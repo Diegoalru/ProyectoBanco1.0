@@ -4,3 +4,4 @@
 /out/
 /dist/
 *.iml
+/src/bancoproyecto/resources/database.properties

@@ -25,7 +25,8 @@ public class UserModel {
 
     /**
      * Constructor usado para crear un nuevo usuario.
-     * @param name Nombre del usuario
+     *
+     * @param name     Nombre del usuario
      * @param username Nombre de usuario
      * @param password Contraseña del usuario
      */
@@ -35,6 +36,21 @@ public class UserModel {
         this.username = username;
         this.password = password;
         this.accounts = new ArrayList<>();
+    }
+
+    /**
+     * Constructor usado al recuperar un usuario de la base de datos.
+     *
+     * @param uuid     UUID del usuario
+     * @param name     Nombre del usuario
+     * @param username Usuario
+     * @param password Contraseña del usuario
+     */
+    public UserModel(String uuid, String name, String username, String password) {
+        this.uuid = UUID.fromString(uuid);
+        this.name = name;
+        this.username = username;
+        this.password = password;
     }
 
     public UUID getUUID() {

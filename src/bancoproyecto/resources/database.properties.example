@@ -1,0 +1,4 @@
+db_url=jdbc:oracle:thin:TNSNAME (TNSNAME is the name of the TNS entry in the tnsnames.ora file)
+db_tns=TNS DIRECTORY ($ORACLE_HOME/network/admin/)
+db_username=USER
+db_password=PASSWORD
