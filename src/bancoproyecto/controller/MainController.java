@@ -61,11 +61,12 @@ public class MainController {
 
             // Abrir la ventana principal
             JOptionPane.showMessageDialog(null,
-                    MessageFormat.format(bundle.getString("welcome_user"), user.user()),
+                    MessageFormat.format(bundle.getString("welcome_user"), user.name()),
                     bundle.getString("welcome_title"),
                     JOptionPane.INFORMATION_MESSAGE
             );
             logger.info("User %s has logged in.".formatted(user.user()));
+            logger.info("Opening main view...");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                     bundle.getString("login_failed"),

@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public class UserController {
-
     private final ResourceBundle bundle = ResourceBundle.getBundle("bancoproyecto.resources.Strings");
     private final int STR_MIN_LENGTH = 5;
     private final int STR_MAX_LENGTH = 32;
@@ -45,11 +44,15 @@ public class UserController {
 
         UserModel usuarioModel = new UserModel(user.name(), user.username(), PasswordUtils.HashPassword(user.password()));
 
-        if (UserRepository.UserExists(usuarioModel).get()) {
+        var usernameExists = UserRepository.userExists(usuarioModel).get();
+
+        if (usernameExists) {
             throw new Exception(bundle.getString("register_username_taken"));
         }
 
-        if (!UserRepository.NewUser(usuarioModel).get()) {
+        var newUserResult = UserRepository.newUser(usuarioModel).get();
+
+        if (newUserResult != 1) {
             throw new Exception(bundle.getString("register_error"));
         }
     }
@@ -73,25 +76,31 @@ public class UserController {
         UserModel userModel = new UserModel(user.username(), PasswordUtils.HashPassword(user.password()));
 
         AtomicReference<UserModel> resultLogin = new AtomicReference<>();
-        var validatePassword = UserRepository.ValidatePassword(userModel)
+
+        var validatePassword = UserRepository.login(userModel)
                 .thenAcceptAsync(result -> {
                     if (result == 1) {
-                        resultLogin.set(UserRepository.Login(userModel).join());
+                        var userResult = UserRepository.getUser(userModel).join();
+                        resultLogin.set(userResult);
                     }
                 });
 
-        validatePassword.join();
+        validatePassword.get();
 
-        if (resultLogin.get() == null) {
+        var userData = resultLogin.get();
+
+        if (userData == null) {
             throw new Exception(bundle.getString("login_invalid_credentials"));
         }
 
         var accounts = new ArrayList<Account>();
-        for (var item : AccountRepository.GetAccountsByUserUUID(resultLogin.get().getUUID().toString()).get()) {
-            accounts.add(new Account(item.getUUID().toString(), item.getDescription(), item.getBalance()));
+        var uuidUser = userData.getUUID().toString();
+
+        for (var item : AccountRepository.GetAccountsByUserUUID(uuidUser).get()) {
+            accounts.add(new Account(item.getUUID().toString(), item.getUserId(), item.getDescription(), item.getBalance(), item.getStatus()));
         }
 
-        MainController.setUsuario(new User(resultLogin.get().getUsername(), accounts));
+        MainController.setUsuario(new User(userData.getName(), userData.getUsername(), accounts));
     }
 
     /**
@@ -101,9 +110,10 @@ public class UserController {
      */
     public List<User> GetUserList() {
         var users = new ArrayList<User>();
-        for (var item : UserRepository.GetUsers().join()) {
-            var accounts = new ArrayList<Account>();
-            users.add(new User(item.getUsername()));
+
+        var accounts = new ArrayList<Account>();
+        for (var item : UserRepository.getUsers().join()) {
+            users.add(new User(item.getName(), item.getUsername()));
         }
 
         return users;

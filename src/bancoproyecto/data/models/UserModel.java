@@ -31,7 +31,6 @@ public class UserModel {
      * @param password Contraseña del usuario
      */
     public UserModel(String name, String username, String password) {
-        this.uuid = UUID.randomUUID();
         this.name = name;
         this.username = username;
         this.password = password;

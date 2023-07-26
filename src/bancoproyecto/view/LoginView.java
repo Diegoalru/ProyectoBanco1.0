@@ -5,6 +5,7 @@ import bancoproyecto.controller.UserController;
 import bancoproyecto.models.UserLogin;
 
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class LoginView extends JFrame {
@@ -38,40 +39,50 @@ public class LoginView extends JFrame {
         pack();
     }
 
-    public void Start() {
-        setVisible(true);
-    }
-
-    public void Stop() {
-        dispose();
-    }
-
     private void Login() {
         var username = Txt_Username.getText();
-        var password = new String(Txt_Password.getPassword());
+        var password = Txt_Password.getPassword();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.length == 0) {
             ShowErrorMessages(bundle.getString("login_empty_fields"));
             return;
         }
 
-        new Thread(() -> {
-            String error = null;
-            UserLogin userlogin = new UserLogin(username, password);
+        SwingWorker<String, Void> worker = new SwingWorker<>() {
+            @Override
+            protected String doInBackground() {
+                String error = null;
+                var userLogin = new UserLogin(username, String.valueOf(password));
 
-            try {
-                userController.LoginUser(userlogin);
-            } catch (Exception e) {
-                error = e.getMessage();
-            } finally {
-                if (error == null || error.isEmpty()) {
-                    MainController.OpenMainView();
-                    Stop();
-                } else {
-                    ShowErrorMessages(error);
+                // Limpiar el campo de contraseña
+                Arrays.fill(password, ' ');
+
+                try {
+                    userController.LoginUser(userLogin);
+                } catch (Exception e) {
+                    error = e.getMessage();
+                }
+
+                return error;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    String error = get(); // Obtiene el resultado de doInBackground()
+                    if (error == null || error.isEmpty()) {
+                        MainController.OpenMainView();
+                        Stop();
+                    } else {
+                        ShowErrorMessages(error);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+        };
+
+        worker.execute();
     }
 
     private void ShowErrorMessages(String error) {
@@ -82,5 +93,13 @@ public class LoginView extends JFrame {
 
         Lbl_Errors.setText(error);
         Pnl_Error.setVisible(true);
+    }
+
+    public void Start() {
+        setVisible(true);
+    }
+
+    public void Stop() {
+        dispose();
     }
 }

@@ -30,6 +30,10 @@ public class Database {
                 jdbcProperties.put("password", databaseProperties.getProperty("db_password"));
                 jdbcProperties.put("oracle.net.tns_admin", databaseProperties.getProperty("db_tns"));
 
+                // Set timeout to 5 seconds
+                jdbcProperties.put("oracle.jdbc.ReadTimeout", 5000);
+                jdbcProperties.put("oracle.net.CONNECT_TIMEOUT", 5000);
+
                 return DriverManager.getConnection(databaseProperties.getProperty("db_url"), jdbcProperties);
             } catch (SQLException e) {
                 logger.severe("Failed to get database connection! Error: " + e.getMessage());
