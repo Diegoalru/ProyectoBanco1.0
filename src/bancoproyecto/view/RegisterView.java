@@ -4,6 +4,7 @@ import bancoproyecto.controller.UserController;
 import bancoproyecto.models.UserRegister;
 
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class RegisterView extends JFrame {
@@ -38,44 +39,53 @@ public class RegisterView extends JFrame {
         pack();
     }
 
-    public void Start() {
-        setVisible(true);
-    }
-
-    public void Stop() {
-        dispose();
-    }
-
     private void Register() {
         var name = Txt_Name.getText();
         var username = Txt_Username.getText();
-        var password = new String(Txt_Password.getPassword());
+        var password = Txt_Password.getPassword();
 
-        if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
+        if (name.isEmpty() || username.isEmpty() || password.length == 0) {
             ShowErrorMessages(bundle.getString("register_error_all_fields_required"));
             return;
         }
 
-        new Thread(() -> {
-            String error = null;
-            UserRegister user = new UserRegister(name, username, password);
-            try {
-                userController.RegisterUser(user);
-            } catch (Exception e) {
-                error = e.getMessage();
-            } finally {
-                if (error == null) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            bundle.getString("register_success_message"),
-                            bundle.getString("register_success_title"),
-                            JOptionPane.INFORMATION_MESSAGE);
-                    Stop();
-                } else {
-                    ShowErrorMessages(error);
+        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+            @Override
+            protected String doInBackground() throws Exception {
+                String error = null;
+                var userRegister = new UserRegister(name, username, String.valueOf(password));
+                Arrays.fill(password, ' ');
+
+                try {
+                    userController.RegisterUser(userRegister);
+                } catch (Exception e) {
+                    error = e.getMessage();
+                }
+
+                return error;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    String error = get();
+                    if (error == null) {
+                        JOptionPane.showMessageDialog(
+                                RegisterView.this,
+                                bundle.getString("register_success_message"),
+                                bundle.getString("register_success_title"),
+                                JOptionPane.INFORMATION_MESSAGE);
+                        Stop();
+                    } else {
+                        ShowErrorMessages(error);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+        };
+
+        worker.execute();
     }
 
     private void ShowErrorMessages(String error) {
@@ -87,4 +97,13 @@ public class RegisterView extends JFrame {
         Lbl_Errors.setText(error);
         Pnl_Error.setVisible(true);
     }
+
+    public void Start() {
+        setVisible(true);
+    }
+
+    public void Stop() {
+        dispose();
+    }
+
 }

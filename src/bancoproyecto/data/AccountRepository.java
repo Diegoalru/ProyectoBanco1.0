@@ -2,6 +2,7 @@ package bancoproyecto.data;
 
 import bancoproyecto.data.models.AccountModel;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,19 +22,24 @@ public class AccountRepository {
         return database.GetConnectionAsync()
                 .thenComposeAsync(connection -> {
                     try {
-                        var script = "SELECT * FROM ACCOUNTS WHERE USER_ID = ?";
-                        var statement = connection.prepareStatement(script);
+                        var script = "{? = call OBTIENE_CUENTAS_USUARIO(?)}";
+                        var callableStatement = connection.prepareCall(script);
 
-                        statement.setString(1, uuid);
+                        callableStatement.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR);
+                        callableStatement.setString(2, uuid);
 
-                        var resultSet = statement.executeQuery();
+                        callableStatement.execute();
+
+                        var resultSet = (ResultSet) callableStatement.getObject(1);
                         var accounts = new ArrayList<AccountModel>();
 
                         while (resultSet.next()) {
                             var account = new AccountModel(
-                                    resultSet.getString("UUID"),
-                                    resultSet.getString("DESCRIPTION"),
-                                    resultSet.getDouble("BALANCE")
+                                    resultSet.getString("BKMUID"),
+                                    resultSet.getInt("BKMIDU"),
+                                    resultSet.getString("BKMDES"),
+                                    resultSet.getDouble("BKMBAL"),
+                                    resultSet.getInt("BKMSTA")
                             );
                             accounts.add(account);
                         }

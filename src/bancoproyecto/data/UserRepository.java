@@ -2,6 +2,7 @@ package bancoproyecto.data;
 
 import bancoproyecto.data.models.UserModel;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,11 +18,11 @@ public class UserRepository {
      *
      * @return Lista de {@link UserModel usuarios}
      */
-    public static CompletableFuture<List<UserModel>> GetUsers() {
+    public static CompletableFuture<List<UserModel>> getUsers() {
         return database.GetConnectionAsync()
                 .thenComposeAsync(connection -> {
                     try {
-                        var script = "SELECT * FROM USERS";
+                        var script = "SELECT BKMUID, BKMNAM, BKMUSN FROM BKMUSR";
                         var statement = connection.prepareStatement(script);
                         var resultSet = statement.executeQuery();
 
@@ -29,10 +30,9 @@ public class UserRepository {
 
                         while (resultSet.next()) {
                             var user = new UserModel(
-                                    resultSet.getString("UUID"),
-                                    resultSet.getString("NAME"),
-                                    resultSet.getString("USERNAME"),
-                                    resultSet.getString("PASSWORD")
+                                    resultSet.getString("BKMUID"),
+                                    resultSet.getString("BKMNAM"),
+                                    resultSet.getString("BKMUSN")
                             );
                             users.add(user);
                         }
@@ -53,21 +53,24 @@ public class UserRepository {
      * @param user {@link UserModel Usuario} que se desea guardar.
      * @return {@link Boolean} que indica si el usuario se guardó correctamente.
      */
-    public static CompletableFuture<Boolean> NewUser(UserModel user) {
+    public static CompletableFuture<Integer> newUser(UserModel user) {
         return database.GetConnectionAsync()
                 .thenComposeAsync(connection -> {
                     try {
-                        var script = "INSERT INTO USERS (UUID, NAME, USERNAME, PASSWORD) VALUES (?, ?, ?, ?)";
-                        var statement = connection.prepareStatement(script);
+                        var script = "{call SP_ALTA_BKMUSR(?, ?, ?, ?, ?)}";
+                        var callableStatement = connection.prepareCall(script);
 
-                        statement.setString(1, user.getUUID().toString());
-                        statement.setString(2, user.getName());
-                        statement.setString(3, user.getUsername());
-                        statement.setString(4, user.getPassword());
+                        callableStatement.setString(1, user.getName());
+                        callableStatement.setString(2, user.getUsername());
+                        callableStatement.setString(3, user.getPassword());
 
-                        var result = statement.executeUpdate();
+                        callableStatement.registerOutParameter(4, Types.INTEGER);
+                        callableStatement.registerOutParameter(5, Types.VARCHAR);
 
-                        return CompletableFuture.completedFuture(result > 0);
+                        callableStatement.execute();
+                        var result = callableStatement.getInt(4);
+
+                        return CompletableFuture.completedFuture(result);
                     } catch (Exception e) {
                         logger.severe("Failed to create user! Error: " + e.getMessage());
                         throw new RuntimeException("Failed to create user");
@@ -78,28 +81,29 @@ public class UserRepository {
     }
 
     /**
-     * Válida que el usuario exista en la base de datos.
+     * Inicia sesión con credenciales proporcionadas por el usuario.
      *
      * @param user {@link UserModel Usuario} que se desea validar.
      * @return {@link Boolean} que indica si el usuario existe.
      */
-    public static CompletableFuture<Integer> ValidatePassword(UserModel user) {
+    public static CompletableFuture<Integer> login(UserModel user) {
         return database.GetConnectionAsync()
                 .thenComposeAsync(connection -> {
                     try {
-                        var script = "SELECT password_validator(?, ?) FROM DUAL";
-                        var statement = connection.prepareStatement(script);
+                        var script = "{? = call FN_INICIO_SESION(?, ?)}";
+                        var callableStatement = connection.prepareCall(script);
 
-                        statement.setString(1, user.getUsername());
-                        statement.setString(2, user.getPassword());
+                        callableStatement.registerOutParameter(1, Types.INTEGER);
+                        callableStatement.setString(2, user.getUsername());
+                        callableStatement.setString(3, user.getPassword());
 
-                        var resultSet = statement.executeQuery();
+                        callableStatement.execute();
 
-                        resultSet.next();
-                        return CompletableFuture.completedFuture(resultSet.getInt(1));
+                        var result = callableStatement.getInt(1);
+                        return CompletableFuture.completedFuture(result);
                     } catch (Exception e) {
-                        logger.severe("Failed to validate password! Error: " + e.getMessage());
-                        throw new RuntimeException("Failed to validate password");
+                        logger.severe("Failed to Login! Error: " + e.getMessage());
+                        throw new RuntimeException("Failed to Login");
                     } finally {
                         database.CloseConnectionAsync(connection);
                     }
@@ -107,35 +111,38 @@ public class UserRepository {
     }
 
     /**
-     * Inicia sesión con credenciales proporcionadas por el usuario.
+     * Obtiene la información del usuario que inició sesión.
      *
-     * @param user {@link UserModel Usuario} que se desea iniciar sesión
-     * @return {@link UserModel Usuario} que inició sesión.
+     * @param user {@link UserModel Usuario} que inició sesión.
+     * @return {@link UserModel Usuario} datos del usuario.
      */
-    public static CompletableFuture<UserModel> Login(UserModel user) {
+    public static CompletableFuture<UserModel> getUser(UserModel user) {
         return database.GetConnectionAsync()
                 .thenComposeAsync(connection -> {
                     try {
-                        var script = "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?";
-                        var statement = connection.prepareStatement(script);
+                        var script = "{? = call FN_OBTIENE_USUARIO(?)}";
+                        var callableStatement = connection.prepareCall(script);
 
-                        statement.setString(1, user.getUsername());
-                        statement.setString(2, user.getPassword());
+                        callableStatement.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR);
+                        callableStatement.setString(2, user.getUsername());
 
-                        var resultSet = statement.executeQuery();
+                        callableStatement.execute();
+
+                        var resultSet = (java.sql.ResultSet) callableStatement.getObject(1);
 
                         if (resultSet.next()) {
                             return CompletableFuture.completedFuture(new UserModel(
-                                    resultSet.getString("NAME"),
-                                    resultSet.getString("USERNAME"),
-                                    resultSet.getString("PASSWORD")
+                                    resultSet.getString("BKMUID"),
+                                    resultSet.getString("BKMNAM"),
+                                    resultSet.getString("BKMUSN"),
+                                    resultSet.getString("BKMPWD")
                             ));
                         }
 
                         return CompletableFuture.completedFuture(null);
                     } catch (Exception e) {
-                        logger.severe("Failed to login! Error: " + e.getMessage());
-                        throw new RuntimeException("Failed to login!");
+                        logger.severe("Failed to get user data! Error: " + e.getMessage());
+                        throw new RuntimeException("Failed to get user data!");
                     } finally {
                         database.CloseConnectionAsync(connection);
                     }
@@ -143,23 +150,27 @@ public class UserRepository {
     }
 
     /**
-     * Verifica si el usuario que se desea registrar ya existe en el sistema.
+     * Verifica si el usuario ya existe en el sistema.
      *
      * @param user {@link UserModel Usuario} que se desea verificar.
      * @return {@link Boolean} que indica si el usuario existe o no.
      */
-    public static CompletableFuture<Boolean> UserExists(UserModel user) {
+    public static CompletableFuture<Boolean> userExists(UserModel user) {
         return database.GetConnectionAsync()
                 .thenComposeAsync(connection -> {
                     try {
-                        var script = "SELECT * FROM USERS WHERE USERNAME = ?";
-                        var statement = connection.prepareStatement(script);
+                        var script = "{? = call FN_VERIFICA_USUARIO(?)}";
+                        var callableStatement = connection.prepareCall(script);
 
-                        statement.setString(1, user.getUsername());
+                        callableStatement.registerOutParameter(1, Types.INTEGER);
+                        callableStatement.setString(2, user.getUsername());
 
-                        var resultSet = statement.executeQuery();
+                        callableStatement.execute();
 
-                        return CompletableFuture.completedFuture(resultSet.next());
+                        int result = callableStatement.getInt(1);
+                        boolean userExists = result == 1;
+
+                        return CompletableFuture.completedFuture(userExists);
                     } catch (Exception e) {
                         logger.severe("Failed to check if user exists! Error: " + e.getMessage());
                         throw new RuntimeException("Failed to check if user exists!");
