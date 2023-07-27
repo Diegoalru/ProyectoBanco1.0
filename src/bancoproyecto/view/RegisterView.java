@@ -6,10 +6,13 @@ import bancoproyecto.models.UserRegister;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.concurrent.CancellationException;
+import java.util.logging.Logger;
 
 public class RegisterView extends JFrame {
     private final UserController userController = new UserController();
     private final ResourceBundle bundle = ResourceBundle.getBundle("bancoproyecto.resources.Strings");
+    private static final Logger logger = Logger.getLogger(RegisterView.class.getName());
     private JPanel MainPanel;
     private JTextField Txt_Name;
     private JTextField Txt_Username;
@@ -18,14 +21,17 @@ public class RegisterView extends JFrame {
     private JButton Btn_Cancel;
     private JPanel Pnl_Error;
     private JLabel Lbl_Errors;
+    private JProgressBar Pgb_Loading;
+    private SwingWorker<String, Void> worker;
 
     public RegisterView() {
         initComponents();
 
-        Btn_Cancel.addActionListener(event -> dispose());
-        Btn_Ok.addActionListener(event -> Register());
+        Btn_Cancel.addActionListener(e -> Stop());
+        Btn_Ok.addActionListener(e -> Register());
 
         ShowErrorMessages(null); // Ocultar los mensajes de error
+        Pgb_Loading.setVisible(false);
     }
 
     private void initComponents() {
@@ -49,7 +55,7 @@ public class RegisterView extends JFrame {
             return;
         }
 
-        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+        worker = new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
                 String error = null;
@@ -57,18 +63,21 @@ public class RegisterView extends JFrame {
                 Arrays.fill(password, ' ');
 
                 try {
+                    // TODO: Enviar chunks de progreso.
+                    publish();
                     userController.RegisterUser(userRegister);
                 } catch (Exception e) {
                     error = e.getMessage();
                 }
-
                 return error;
             }
 
             @Override
             protected void done() {
                 try {
+                    Pgb_Loading.setVisible(false);
                     String error = get();
+
                     if (error == null) {
                         JOptionPane.showMessageDialog(
                                 RegisterView.this,
@@ -79,9 +88,16 @@ public class RegisterView extends JFrame {
                     } else {
                         ShowErrorMessages(error);
                     }
+                } catch (CancellationException e) {
+                    logger.info("Se ha cancelado el inicio de sesión.");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.severe(e.getMessage());
                 }
+            }
+
+            @Override
+            protected void process(java.util.List<Void> chunks) {
+                Pgb_Loading.setVisible(true);
             }
         };
 
@@ -94,6 +110,7 @@ public class RegisterView extends JFrame {
             return;
         }
 
+        Pgb_Loading.setVisible(false);
         Lbl_Errors.setText(error);
         Pnl_Error.setVisible(true);
     }
@@ -103,6 +120,9 @@ public class RegisterView extends JFrame {
     }
 
     public void Stop() {
+        if (worker != null && !worker.isDone()) {
+            worker.cancel(true);
+        }
         dispose();
     }
 
